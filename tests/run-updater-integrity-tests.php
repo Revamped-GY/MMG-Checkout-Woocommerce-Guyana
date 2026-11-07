@@ -24,7 +24,8 @@ $download_count = 0;
 
 function is_wp_error( $value ): bool { return $value instanceof WP_Error; }
 function get_site_transient( string $key ) { global $remote_info; return $remote_info; }
-function plugin_basename( string $file ): string { return basename( $file ); }
+function plugin_basename( string $file ): string { global $basename_override; return $basename_override ?? basename( $file ); }
+function trailingslashit( string $path ): string { return rtrim( $path, '/' ) . '/'; }
 function apply_filters( string $hook, $value ) { return $value; }
 function add_filter( ...$args ): void {}
 function add_action( ...$args ): void {}
@@ -104,6 +105,37 @@ updater_check( ! is_file( $predownloaded ), 'A rejected pre-downloaded package i
 $remote_info = false;
 $result = MMGWC_Updater::download_verified_package( false, 'https://example.com/unrelated.zip', null, array( 'plugin' => 'other/other.php' ) );
 updater_check( $result === false, 'Packages for other plugins remain untouched.' );
+
+// Folder handling during an update.
+final class Test_Filesystem {
+	public function exists( string $path ): bool { return file_exists( rtrim( $path, '/' ) ); }
+	public function move( string $from, string $to ): bool { return rename( rtrim( $from, '/' ), rtrim( $to, '/' ) ); }
+}
+$wp_filesystem = new Test_Filesystem();
+$work = sys_get_temp_dir() . '/mmgwc-folder-test-' . bin2hex( random_bytes( 4 ) );
+mkdir( $work . '/mmg-checkout-woocommerce', 0777, true );
+file_put_contents( $work . '/mmg-checkout-woocommerce/mmg-checkout-woocommerce.php', '<?php' );
+
+$result = MMGWC_Updater::keep_installed_folder( $work . '/mmg-checkout-woocommerce/', $work, null, array( 'plugin' => 'mmg-checkout-woocommerce.php' ) );
+updater_check( $result === $work . '/mmg-checkout-woocommerce/', 'A plugin installed without a folder keeps the package as unpacked.' );
+
+$basename_override = 'MMG-Checkout-Woocommerce-Guyana-main/mmg-checkout-woocommerce.php';
+MMGWC_Updater::init( dirname( __DIR__ ) . '/mmg-checkout-woocommerce.php' );
+$result = MMGWC_Updater::keep_installed_folder( $work . '/mmg-checkout-woocommerce/', $work, null, array( 'plugin' => $basename_override ) );
+updater_check( $result === $work . '/MMG-Checkout-Woocommerce-Guyana-main/', 'The package is moved into the folder the plugin is installed in.' );
+updater_check( is_file( $work . '/MMG-Checkout-Woocommerce-Guyana-main/mmg-checkout-woocommerce.php' ), 'The moved package still holds the main plugin file.' );
+
+$result = MMGWC_Updater::keep_installed_folder( $work . '/other/', $work, null, array( 'plugin' => 'other/other.php' ) );
+updater_check( $result === $work . '/other/', 'Other plugin updates are left alone.' );
+
+$basename_override = 'mmg-checkout-woocommerce/mmg-checkout-woocommerce.php';
+MMGWC_Updater::init( dirname( __DIR__ ) . '/mmg-checkout-woocommerce.php' );
+$result = MMGWC_Updater::keep_installed_folder( $work . '/MMG-Checkout-Woocommerce-Guyana-main/', $work, null, array( 'plugin' => $basename_override ) );
+updater_check( $result === $work . '/mmg-checkout-woocommerce/', 'The standard folder name is restored when that is the installed folder.' );
+
+array_map( 'unlink', glob( $work . '/*/*' ) ?: array() );
+array_map( 'rmdir', glob( $work . '/*' ) ?: array() );
+rmdir( $work );
 
 if ( $failures > 0 ) {
 	fwrite( STDERR, "{$failures} of {$tests} updater integrity tests failed.\n" );

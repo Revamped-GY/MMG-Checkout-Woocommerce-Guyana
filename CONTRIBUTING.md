@@ -20,7 +20,6 @@ The plugin lives at the repo root. The folder is the live source. Old per-versio
 ├── SECURITY.md
 ├── CHANGELOG.md
 ├── CONTRIBUTING.md
-├── CLAUDE.md
 └── .github/                       workflows and issue templates
 ```
 

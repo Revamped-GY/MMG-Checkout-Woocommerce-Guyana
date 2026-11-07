@@ -2,6 +2,24 @@
 
 All notable changes to MMG Checkout for WooCommerce are recorded here. The format follows Keep a Changelog and the project follows Semantic Versioning.
 
+## [2.16.3] - 2026-11-07
+
+### Fixed
+
+- An update no longer moves the plugin into the `mmg-checkout-woocommerce` folder when it was installed in a folder with another name. That move left the plugin deactivated and MMG missing from checkout.
+- The CSV exports no longer raise PHP 8.4 deprecation notices.
+
+### Security
+
+- Added the `Update URI` header so WordPress never offers a wordpress.org plugin with the same slug as an update.
+- The subscribers CSV export now prefixes cells that start with `=`, `+`, `-`, `@` or a control character, as the payments export already did.
+
+### Changed
+
+- Release packages are built from a fixed list of plugin files instead of a list of exclusions.
+- Each release also carries `mmg-checkout-woocommerce.zip`, so `releases/latest/download/mmg-checkout-woocommerce.zip` always serves the newest version. The updater still installs only the versioned ZIP with its checksum.
+- Tested with WordPress 7.1 and WooCommerce 11.2.
+
 ## [2.16.2] - 2026-09-01
 
 ### Fixed

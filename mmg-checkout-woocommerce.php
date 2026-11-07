@@ -3,23 +3,24 @@
  * Plugin Name: MMG Checkout for WooCommerce
  * Plugin URI: https://revamped.gy/mmg-woocommerce-plugin-guyana
  * Description: Accept MMG payments in WooCommerce (Classic and Block Checkout). Includes Importer, Diagnostics, Exports, Payment Requests, Subscriptions, Support Bundle, and admin tools. Configure via WP Admin → MMG Checkout.
- * Version: 2.16.2
+ * Version: 2.16.3
  * Author: Revamped GY
  * Author URI: https://revamped.gy
  * Text Domain: mmg-checkout-woocommerce
  * Requires PHP: 7.4
  * Requires at least: 6.0
  * WC requires at least: 7.0
- * WC tested up to: 9.4
+ * WC tested up to: 11.2
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * Update URI: https://github.com/Revamped-GY/MMG-Checkout-Woocommerce-Guyana
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'MMGWC_VERSION', '2.16.2' );
+define( 'MMGWC_VERSION', '2.16.3' );
 define( 'MMGWC_PLUGIN_FILE', __FILE__ );
 define( 'MMGWC_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'MMGWC_PLUGIN_URL', plugin_dir_url( __FILE__ ) );

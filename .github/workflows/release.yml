@@ -156,35 +156,11 @@ jobs:
           set -euo pipefail
           rm -rf build
           mkdir -p build/mmg-checkout-woocommerce
-          rsync -a \
-            --exclude='.git/' \
-            --exclude='.github/' \
-            --exclude='.gitignore' \
-            --exclude='.gitattributes' \
-            --exclude='.editorconfig' \
-            --exclude='.env' \
-            --exclude='.env.example' \
-            --exclude='build/' \
-            --exclude='dist/' \
-            --exclude='staging/' \
-            --exclude='node_modules/' \
-            --exclude='vendor/' \
-            --exclude='tests/' \
-            --exclude='docs/' \
-            --exclude='AGENTS.md' \
-            --exclude='CLAUDE.md' \
-            --exclude='PRODUCT.md' \
-            --exclude='CONTRIBUTING.md' \
-            --exclude='SECURITY.md' \
-            --exclude='CHANGELOG.md' \
-            --exclude='README.md' \
-            --exclude='*.zip' \
-            --exclude='*.log' \
-            --exclude='*.bak' \
-            --exclude='*.swp' \
-            --exclude='.DS_Store' \
-            --exclude='Thumbs.db' \
-            ./ build/mmg-checkout-woocommerce/
+          # Only the files the plugin needs at run time.
+          cp mmg-checkout-woocommerce.php uninstall.php readme.txt LICENSE build/mmg-checkout-woocommerce/
+          cp -R includes assets build/mmg-checkout-woocommerce/
+          if [ -d languages ]; then cp -R languages build/mmg-checkout-woocommerce/; fi
+          find build \( -name '.DS_Store' -o -name 'Thumbs.db' -o -name '*.bak' -o -name '*.swp' \) -delete
 
       - name: Build ZIP and release notes
         if: steps.ver.outputs.should_release == 'true'
@@ -196,6 +172,9 @@ jobs:
           ( cd build && zip -qr "../${NAME}" mmg-checkout-woocommerce )
           SHA=$(sha256sum "${NAME}" | awk '{print $1}')
           echo "${SHA}  ${NAME}" > "${NAME}.sha256"
+          # Fixed name for releases/latest/download/mmg-checkout-woocommerce.zip.
+          # The updater only installs the versioned ZIP above.
+          cp "${NAME}" mmg-checkout-woocommerce.zip
 
           awk -v version="${VERSION}" '
             $0 ~ ("^## \\[" version "\\]( |$)") { found=1; next }
@@ -278,4 +257,4 @@ jobs:
           files: |
             ${{ steps.zip.outputs.name }}
             ${{ steps.zip.outputs.name }}.sha256
-            mmg-checkout.json
+            mmg-checkout-woocommerce.zip

@@ -13,7 +13,6 @@ desktop.ini
 *.tmp
 *.old
 *.orig
-*CLAUDE.md
 
 # Build artefacts. Plugin ZIPs are produced by GitHub Actions on tag push and uploaded as release assets.
 *.zip
@@ -88,4 +87,3 @@ docs/
 mmg-checkout-woocommerce-v*-src/
 mmg-checkout-woocommerce-v*.*.*/
 !mmg-checkout-woocommerce/
-CLAUDE.md

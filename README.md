@@ -43,7 +43,7 @@ The plugin adds MMG as a payment method on classic and Block checkout, handles e
 
 ## Installation
 
-1. Download the latest plugin ZIP from the [Releases](../../releases) page.
+1. Download [`mmg-checkout-woocommerce.zip`](https://github.com/Revamped-GY/MMG-Checkout-Woocommerce-Guyana/releases/latest/download/mmg-checkout-woocommerce.zip) from the latest release.
 2. In WordPress admin go to **Plugins → Add New → Upload Plugin** and upload the ZIP.
 3. Activate the plugin.
 4. Go to **MMG Checkout → Importer** and upload your MMG credential package (Sandbox first).
@@ -64,7 +64,7 @@ For invoice-style billing use **MMG Checkout → Payment Requests** to create a 
 
 ## Updates
 
-Version 2.16.0 corrected the GitHub update channel and requires a matching `.zip.sha256` sidecar before WordPress can install the ZIP. Versions 2.13.1 through 2.14.21 use the legacy manifest to receive the one-time 2.16.0 bridge, then use this repository for later releases. Update metadata is checked during normal WordPress update checks and successful responses are cached for six hours. A version-bumped push to `main` creates the matching release and installable assets after PHP 7.4 to 8.3 validation. Later pushes at the same version do not publish another update.
+Version 2.16.0 corrected the GitHub update channel and requires a matching `.zip.sha256` sidecar before WordPress can install the ZIP. Versions 2.13.1 through 2.14.21 read the legacy manifest at `revamped.gy/updates/mmg-checkout.json`, which names the current release, and use this repository from then on. Update metadata is checked during normal WordPress update checks and successful responses are cached for six hours. A version-bumped push to `main` creates the matching release and installable assets after PHP 7.4 to 8.3 validation. Later pushes at the same version do not publish another update. Since 2.16.3 an update keeps the plugin in the folder it was installed in, and the `Update URI` header keeps wordpress.org from offering a plugin with the same slug.
 
 Version 2.16.2 follows MMG's two published flows. Standard hosted checkout requires only the Checkout URL, Merchant ID, Client ID, Merchant Name, Secret Key and PEM keys documented for [Merchant Checkout](https://mmg.gy/developer/Merchant%20Checkout.html). Its encrypted Checkout Response can complete the matching WooCommerce order. The separate [Merchant Initiated API](https://mmg.gy/developer/Merchant%20Initiated.html) credentials are optional for hosted checkout and are used for approval requests plus an additional Transaction Lookup when configured. The importer can read these optional values from a Postman environment inside the MMG ZIP or from a separate JSON file for Sandbox or Live.
 

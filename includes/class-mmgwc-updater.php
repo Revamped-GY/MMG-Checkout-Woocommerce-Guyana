@@ -67,6 +67,44 @@ class MMGWC_Updater {
         // Run after other download filters so a supplied local file is still
         // checked before WordPress can unpack this plugin update.
         add_filter( 'upgrader_pre_download', array( __CLASS__, 'download_verified_package' ), PHP_INT_MAX, 4 );
+        add_filter( 'upgrader_source_selection', array( __CLASS__, 'keep_installed_folder' ), 10, 4 );
+    }
+
+    /**
+     * Release packages unpack to mmg-checkout-woocommerce/. A site that
+     * installed the plugin in a folder with another name (for example from a
+     * GitHub source download) would otherwise get a second copy and lose the
+     * active plugin, so the package is moved into the existing folder name.
+     *
+     * @param string|WP_Error $source        Unpacked package folder.
+     * @param string          $remote_source Upgrade working folder.
+     * @param mixed           $upgrader      Upgrader instance.
+     * @param array           $hook_extra    Upgrade context.
+     * @return string|WP_Error
+     */
+    public static function keep_installed_folder( $source, $remote_source, $upgrader, $hook_extra = array() ) {
+        if ( is_wp_error( $source ) || ! is_array( $hook_extra ) || empty( $hook_extra['plugin'] ) || $hook_extra['plugin'] !== self::$plugin_basename ) {
+            return $source;
+        }
+
+        $folder = dirname( self::$plugin_basename );
+        if ( $folder === '.' || $folder === '' ) {
+            return $source;
+        }
+
+        $wanted = trailingslashit( $remote_source ) . $folder . '/';
+        if ( trailingslashit( $source ) === $wanted ) {
+            return $source;
+        }
+
+        global $wp_filesystem;
+        if ( ! is_object( $wp_filesystem ) || ! $wp_filesystem->exists( trailingslashit( $source ) . basename( self::$plugin_file ) ) ) {
+            return $source;
+        }
+        if ( $wp_filesystem->exists( $wanted ) || ! $wp_filesystem->move( $source, $wanted ) ) {
+            return new WP_Error( 'mmgwc_update_folder', 'The MMG Checkout update could not be placed in the existing plugin folder.' );
+        }
+        return $wanted;
     }
 
     /**

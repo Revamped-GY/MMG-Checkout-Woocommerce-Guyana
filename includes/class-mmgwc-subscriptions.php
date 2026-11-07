@@ -1134,10 +1134,10 @@ public static function export_subscribers_csv(): void {
 		header( 'Expires: 0' );
 
 		$out = fopen( 'php://output', 'w' );
-		fputcsv( $out, array( 'id', 'status', 'email', 'customer_id', 'product_id', 'variation_id', 'quantity', 'interval', 'last_paid', 'next_due', 'last_order_id', 'last_txn_id' ) );
+		self::csv_row( $out, array( 'id', 'status', 'email', 'customer_id', 'product_id', 'variation_id', 'quantity', 'interval', 'last_paid', 'next_due', 'last_order_id', 'last_txn_id' ) );
 
 		foreach ( $rows as $r ) {
-			fputcsv( $out, array(
+			self::csv_row( $out, array(
 				$r['id'] ?? '',
 				$r['status'] ?? '',
 				$r['email'] ?? '',
@@ -1155,5 +1155,22 @@ public static function export_subscribers_csv(): void {
 
 		fclose( $out );
 		exit;
+	}
+
+	/**
+	 * Spreadsheet programs run cells that start with =, +, -, @ or a control
+	 * character as formulas. Customer emails end up in this file.
+	 */
+	private static function csv_row( $handle, array $row ): void {
+		$safe = array();
+		foreach ( $row as $value ) {
+			$value = is_scalar( $value ) || $value === null ? (string) $value : (string) wp_json_encode( $value );
+			if ( $value !== '' && in_array( $value[0], array( '=', '+', '-', '@', "\t", "\r", "\n" ), true ) ) {
+				$value = "'" . $value;
+			}
+			$safe[] = $value;
+		}
+		// PHP 8.4 deprecates leaving out the escape character.
+		fputcsv( $handle, $safe, ',', '"', '\\' );
 	}
 }
