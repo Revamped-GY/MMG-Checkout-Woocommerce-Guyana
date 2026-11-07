@@ -129,7 +129,8 @@ final class MMGWC_Exports {
 
 	private static function csv_row( $handle, array $row ): void {
 		$safe = array_map( array( __CLASS__, 'csv_safe' ), $row );
-		fputcsv( $handle, $safe );
+		// PHP 8.4 deprecates leaving out the escape character.
+		fputcsv( $handle, $safe, ',', '"', '\\' );
 	}
 
 	private static function order_matches_customer( WC_Order $order, int $customer_id, string $customer_email ): bool {
