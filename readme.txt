@@ -2,10 +2,10 @@
 Contributors: revampedgy
 Tags: woocommerce, payment gateway, mmg, guyana, merchant checkout, blocks checkout
 Requires at least: 6.0
-Tested up to: 6.9.1
-Tested with: 6.9.1
+Tested up to: 7.1
+Tested with: 7.1
 Requires PHP: 7.4
-Stable tag: 2.16.2
+Stable tag: 2.16.3
 License: GPLv2 or later
 
 == Description ==
@@ -95,6 +95,15 @@ Confirm the configured MMG Response URL matches the Callback URL shown in Diagno
 Sandbox keys only work in Sandbox mode. Live keys only work in Live mode. Re import the correct files for the current mode.
 
 == Changelog ==
+
+= 2.16.3 =
+
+* Updates keep the plugin in the folder it was installed in, so a site that installed from a renamed folder stays active after updating.
+* Added the Update URI header so WordPress never offers a wordpress.org plugin with the same slug as an update.
+* The subscribers CSV export protects cells against spreadsheet formulas, as the payments export already did.
+* The CSV exports no longer raise PHP 8.4 deprecation notices.
+* Release packages contain only the files the plugin needs, and each release also has a fixed-name copy for the latest download link.
+* Tested with WordPress 7.1 and WooCommerce 11.2.
 
 = 2.16.2 =
 
